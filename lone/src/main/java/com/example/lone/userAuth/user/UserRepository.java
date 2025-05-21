@@ -1,4 +1,4 @@
-package com.example.lone.userAuth.model;
+package com.example.lone.userAuth.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
