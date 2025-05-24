@@ -1,4 +1,4 @@
-package com.example.lone.Lone.dto;
+package com.example.lone.loan.dto;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;

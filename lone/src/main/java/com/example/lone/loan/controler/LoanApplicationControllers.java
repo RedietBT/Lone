@@ -1,10 +1,10 @@
-package com.example.lone.Lone.controler;
+package com.example.lone.loan.controler;
 
 
-import com.example.lone.Lone.dto.LoanApplicationRequest;
-import com.example.lone.Lone.dto.LoanApplicationResponse;
-import com.example.lone.Lone.model.LoanApplication;
-import com.example.lone.Lone.services.LoanApplicationService;
+import com.example.lone.loan.dto.LoanApplicationRequest;
+import com.example.lone.loan.dto.LoanApplicationResponse;
+import com.example.lone.loan.model.LoanApplication;
+import com.example.lone.loan.services.LoanApplicationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,8 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/loans")
@@ -34,17 +32,11 @@ public class LoanApplicationControllers {
                 .body("Loan application submitted successfully with ID:" + submittedLone.getId());
     }
 
-    @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<List<LoanApplicationResponse>> getAllLoanApplications(){
-        List<LoanApplicationResponse> loanApplicationResponses = loanApplicationService.getAllLoanApplication();
-        return ResponseEntity.ok(loanApplicationResponses);
-    }
-
-    @GetMapping("/pending")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<List<LoanApplicationResponse>> getPendingLoanApplications(){
-        List<LoanApplicationResponse> loanApplicationResponses= loanApplicationService.getPendingLoanApplications();
-        return ResponseEntity.ok(loanApplicationResponses);
+    //Get single loan application by Id
+    @GetMapping("/my")
+    @PreAuthorize("hasAuthority('ADMIN') or @loanSecurity.isOwner(#loanId)")
+    public ResponseEntity<LoanApplicationResponse> getLoanApplicationById(@PathVariable Long loanId){
+        LoanApplicationResponse loanApplicationResponse = loanApplicationService.getLoanApplicationById(loanId);
+        return ResponseEntity.ok(loanApplicationResponse);
     }
 }

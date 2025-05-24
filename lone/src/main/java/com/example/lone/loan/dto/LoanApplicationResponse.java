@@ -1,6 +1,6 @@
-package com.example.lone.Lone.dto;
+package com.example.lone.loan.dto;
 
-import com.example.lone.Lone.model.LoanStatus;
+import com.example.lone.loan.model.LoanStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

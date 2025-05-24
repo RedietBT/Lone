@@ -1,4 +1,4 @@
-package com.example.lone.Lone.model;
+package com.example.lone.loan.model;
 
 public enum LoanStatus {
 

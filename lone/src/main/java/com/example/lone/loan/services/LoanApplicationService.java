@@ -1,12 +1,11 @@
-package com.example.lone.Lone.services;
+package com.example.lone.loan.services;
 
-import com.example.lone.Lone.dto.LoanApplicationRequest;
-import com.example.lone.Lone.dto.LoanApplicationResponse;
-import com.example.lone.Lone.dto.LoanApprovalRequest;
-import com.example.lone.Lone.model.LoanApplication;
-import com.example.lone.Lone.model.LoanStatus;
-import com.example.lone.Lone.repository.LoanApplicationRepository;
-import com.example.lone.LoneApplication;
+import com.example.lone.loan.dto.LoanApplicationRequest;
+import com.example.lone.loan.dto.LoanApplicationResponse;
+import com.example.lone.loan.dto.LoanApprovalRequest;
+import com.example.lone.loan.model.LoanApplication;
+import com.example.lone.loan.model.LoanStatus;
+import com.example.lone.loan.repository.LoanApplicationRepository;
 import com.example.lone.userAuth.user.User;
 import com.example.lone.userAuth.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;

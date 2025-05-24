@@ -1,7 +1,7 @@
-package com.example.lone.Lone.repository;
+package com.example.lone.loan.repository;
 
-import com.example.lone.Lone.model.LoanApplication;
-import com.example.lone.Lone.model.LoanStatus;
+import com.example.lone.loan.model.LoanApplication;
+import com.example.lone.loan.model.LoanStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

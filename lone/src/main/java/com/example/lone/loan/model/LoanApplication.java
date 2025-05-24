@@ -1,4 +1,4 @@
-package com.example.lone.Lone.model;
+package com.example.lone.loan.model;
 
 import com.example.lone.userAuth.user.User;
 import jakarta.persistence.*;
