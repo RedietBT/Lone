@@ -2,18 +2,19 @@ package com.example.lone.Lone.controler;
 
 
 import com.example.lone.Lone.dto.LoanApplicationRequest;
+import com.example.lone.Lone.dto.LoanApplicationResponse;
 import com.example.lone.Lone.model.LoanApplication;
 import com.example.lone.Lone.services.LoanApplicationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/loans")
@@ -31,5 +32,19 @@ public class LoanApplicationControllers {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body("Loan application submitted successfully with ID:" + submittedLone.getId());
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<LoanApplicationResponse>> getAllLoanApplications(){
+        List<LoanApplicationResponse> loanApplicationResponses = loanApplicationService.getAllLoanApplication();
+        return ResponseEntity.ok(loanApplicationResponses);
+    }
+
+    @GetMapping("/pending")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<LoanApplicationResponse>> getPendingLoanApplications(){
+        List<LoanApplicationResponse> loanApplicationResponses= loanApplicationService.getPendingLoanApplications();
+        return ResponseEntity.ok(loanApplicationResponses);
     }
 }
