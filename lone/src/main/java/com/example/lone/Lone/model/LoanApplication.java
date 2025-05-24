@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 
 @Data
@@ -44,4 +45,11 @@ public class LoanApplication {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private LoanStatus status;
+
+    private LocalDate loanStartDate;
+    private BigDecimal monthlyEmi;
+    @Column(length = 2000)
+    private String repaymentSchedule;
+    @Column(length = 500)
+    private String adminRemarks;
 }
