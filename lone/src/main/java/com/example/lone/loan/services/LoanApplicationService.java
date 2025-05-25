@@ -1,13 +1,13 @@
 package com.example.lone.loan.services;
 
-import com.example.lone.loan.dto.LoanApplicationRequest;
-import com.example.lone.loan.dto.LoanApplicationResponse;
-import com.example.lone.loan.dto.LoanApprovalRequest;
+import com.example.lone.loan.dto.*;
 import com.example.lone.loan.model.LoanApplication;
 import com.example.lone.loan.model.LoanStatus;
 import com.example.lone.loan.repository.LoanApplicationRepository;
 import com.example.lone.userAuth.user.User;
 import com.example.lone.userAuth.user.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,12 +15,16 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +32,7 @@ public class LoanApplicationService {
 
     private final LoanApplicationRepository loanApplicationRepository;
     private final UserRepository userRepository;
+    private final ObjectMapper objectMapper;
 
     //submit loan
     @Transactional
@@ -161,6 +166,92 @@ public class LoanApplicationService {
         }
         return loanApplication.getRepaymentSchedule();
     }
+
+    @Transactional(readOnly = true)
+    public List<DashboardLoanSummary> getCustomerDashboardLoans() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName(); // Get email of current authenticated user
+
+        User currentUser = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("Authenticated user not found for email: " + userEmail));
+
+
+        List<LoanApplication> userLoans = loanApplicationRepository.findByUserEmail(String.valueOf(currentUser));
+
+        // Map them to DashboardLoanSummary DTOs
+        return userLoans.stream()
+                .map(this::mapToDashboardLoanSummary) // Helper method to map single loan
+                .collect(Collectors.toList());
+    }
+
+    private DashboardLoanSummary mapToDashboardLoanSummary(LoanApplication loanApplication) {
+        LocalDate nextEmiDueDate = null;
+        BigDecimal nextEmiAmount = null;
+        BigDecimal outstandingBalance = loanApplication.getLoanAmount(); // Default to full amount
+        Long remainingPayments = null;
+
+        // Only calculate EMI details if the loan is approved and schedule exists
+        if (loanApplication.getStatus() == LoanStatus.APPROVED && loanApplication.getRepaymentSchedule() != null) {
+            try {
+                CollectionType listType = objectMapper.getTypeFactory().constructCollectionType(List.class, RepaymentEntry.class);
+                List<RepaymentEntry> schedule = objectMapper.readValue(loanApplication.getRepaymentSchedule(), listType);
+
+
+                Optional<RepaymentEntry> nextPayment = schedule.stream()
+                        .filter(entry -> entry.getPaymentDate().isAfter(LocalDate.now()) || entry.getPaymentDate().isEqual(LocalDate.now()))
+                        .min(Comparator.comparing(RepaymentEntry::getPaymentDate)); // Find the earliest due date
+
+                if (nextPayment.isPresent()) {
+                    nextEmiDueDate = nextPayment.get().getPaymentDate();
+                    nextEmiAmount = nextPayment.get().getMonthlyEmi();
+                    outstandingBalance = nextPayment.get().getRemainingBalance();
+                    remainingPayments = schedule.stream()
+                            .filter(entry -> entry.getPaymentDate().isAfter(LocalDate.now()) || entry.getPaymentDate().isEqual(LocalDate.now()))
+                            .count();
+                } else {
+                    // If no future payments, loan is either fully paid or something else
+                    outstandingBalance = BigDecimal.ZERO;
+                    remainingPayments = 0L;
+                }
+
+            } catch (JsonProcessingException e) {
+                // Log the error but don't prevent the dashboard from loading
+                System.err.println("Error deserializing repayment schedule for loan " + loanApplication.getId() + ": " + e.getMessage());
+                // Set to null or default values if error
+                nextEmiDueDate = null;
+                nextEmiAmount = null;
+                outstandingBalance = BigDecimal.ZERO; // Assume paid or error
+                remainingPayments = 0L;
+            }
+        } else if (loanApplication.getStatus() == LoanStatus.PENDING) {
+            // For pending loans, there's no EMI info yet
+            nextEmiDueDate = null;
+            nextEmiAmount = null;
+            outstandingBalance = loanApplication.getLoanAmount(); // Full amount outstanding for pending
+            remainingPayments = null;
+        } else if (loanApplication.getStatus() == LoanStatus.REJECTED) {
+            nextEmiDueDate = null;
+            nextEmiAmount = null;
+            outstandingBalance = BigDecimal.ZERO; // No outstanding for rejected
+            remainingPayments = 0L;
+        }
+        // For other statuses, set to nulls, depends on your business logic
+
+        return DashboardLoanSummary.builder()
+                .id(loanApplication.getId())
+                .loanAmount(loanApplication.getLoanAmount())
+                .loanType(loanApplication.getLoanType())
+                .durationMonths(loanApplication.getDurationMonths())
+                .status(loanApplication.getStatus())
+                .loanStartDate(loanApplication.getLoanStartDate())
+                .monthlyEmi(loanApplication.getMonthlyEmi())
+                .nextEmiDueDate(nextEmiDueDate)
+                .nextEmiAmount(nextEmiAmount)
+                .outstandingBalance(outstandingBalance)
+                .remainingPayments(remainingPayments)
+                .build();
+    }
+
 
     private LoanApplicationResponse mapToLoanApplicationResponse (LoanApplication loanApplication){
         return LoanApplicationResponse.builder()

@@ -20,7 +20,7 @@ public class DashboardLoanSummary {
     private String loanType;
     private Integer durationMonths;
     private LoanStatus status;
-    private LocalDate localDate;
+    private LocalDate loanStartDate;
     private BigDecimal monthlyEmi;
 
     private LocalDate nextEmiDueDate;
