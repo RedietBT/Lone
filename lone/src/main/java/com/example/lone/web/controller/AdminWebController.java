@@ -26,7 +26,7 @@ public class AdminWebController {
     @GetMapping("/admin/dashboard")
     public String adminDashboard(Model model) {
         List<LoanApplicationResponse> pendingLoans = loanApplicationService.getPendingLoanApplications();
-        List<LoanApplicationResponse> allLoans = loanApplicationService.getAllLoanApplication(); // Or just approved/rejected
+        List<LoanApplicationResponse> allLoans = loanApplicationService.getAllLoanApplication();
         model.addAttribute("pendingLoans", pendingLoans);
         model.addAttribute("allLoans", allLoans); // All loans for admin overview
         return "admin/dashboard"; // Corresponds to src/main/resources/templates/admin/dashboard.html

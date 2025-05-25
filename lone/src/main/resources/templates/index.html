@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::div#content})}"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Welcome to LoanApp</title>
+</head>
+<body>
+<div id="content">
+    <h1>Welcome to the Loan Management System!</h1>
+    <p>Your trusted partner for managing loan applications and repayments.</p>
+    <div sec:authorize="!isAuthenticated()">
+        <p>Please <a th:href="@{/login}">Login</a> or <a th:href="@{/register}">Register</a> to get started.</p>
+    </div>
+    <div sec:authorize="hasAnyAuthority('USER', 'CUSTOMER')">
+        <p>Go to your <a th:href="@{/customer/dashboard}">Customer Dashboard</a>.</p>
+    </div>
+    <div sec:authorize="hasAuthority('ADMIN')">
+        <p>Go to the <a th:href="@{/admin/dashboard}">Admin Dashboard</a>.</p>
+    </div>
+</div>
+</body>
+</html>

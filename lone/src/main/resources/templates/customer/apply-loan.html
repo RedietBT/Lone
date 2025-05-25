@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::div#content})}">
+<head>
+    <title>Apply for Loan</title>
+</head>
+<body>
+<div id="content">
+    <h2>Apply for a New Loan</h2>
+    <form th:action="@{/customer/apply-loan}" th:object="${loanApplicationRequest}" method="post">
+        <div class="form-group">
+            <label for="loanAmount">Loan Amount:</label>
+            <input type="number" id="loanAmount" th:field="*{loanAmount}" class="form-control" required min="1">
+        </div>
+        <div class="form-group">
+            <label for="loanType">Loan Type:</label>
+            <input type="text" id="loanType" th:field="*{loanType}" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="durationMonths">Duration (Months):</label>
+            <input type="number" id="durationMonths" th:field="*{durationMonths}" class="form-control" required min="1">
+        </div>
+        <div class="form-group">
+            <label for="purpose">Purpose:</label>
+            <textarea id="purpose" th:field="*{purpose}" class="form-control" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="annualIncome">Annual Income:</label>
+            <input type="number" id="annualIncome" th:field="*{annualIncome}" class="form-control" required min="0">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Application</button>
+    </form>
+</div>
+</body>
+</html>

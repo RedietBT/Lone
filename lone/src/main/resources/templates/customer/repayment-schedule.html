@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::div#content})}">
+<head>
+    <title>Repayment Schedule - Loan [[${loanId}]]</title>
+</head>
+<body>
+<div id="content">
+    <h2>Repayment Schedule for Loan ID: <span th:text="${loanId}"></span></h2>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Month</th>
+            <th>Payment Date</th>
+            <th>Monthly EMI</th>
+            <th>Principal Paid</th>
+            <th>Interest Paid</th>
+            <th>Remaining Balance</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="entry : ${repaymentSchedule}">
+            <td th:text="${entry.monthNumber}"></td>
+            <td th:text="${#temporals.format(entry.paymentDate, 'dd-MM-yyyy')}"></td>
+            <td th:text="${#numbers.formatDecimal(entry.monthlyEmi, 0, 'COMMA', 2, 'POINT')}"></td>
+            <td th:text="${#numbers.formatDecimal(entry.principalPaid, 0, 'COMMA', 2, 'POINT')}"></td>
+            <td th:text="${#numbers.formatDecimal(entry.interestPaid, 0, 'COMMA', 2, 'POINT')}"></td>
+            <td th:text="${#numbers.formatDecimal(entry.remainingBalance, 0, 'COMMA', 2, 'POINT')}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(repaymentSchedule)}">
+            <td colspan="6">Repayment schedule not available or empty.</td>
+        </tr>
+        </tbody>
+    </table>
+    <a th:href="@{/customer/dashboard}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+</body>
+</html>
