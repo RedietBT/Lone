@@ -1,4 +1,4 @@
-package com.example.lone.loan.controler;
+package com.example.lone.loan.controller;
 
 import com.example.lone.loan.dto.LoanApplicationResponse;
 import com.example.lone.loan.dto.LoanApprovalRequest;
