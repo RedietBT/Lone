@@ -35,21 +35,29 @@ public class LoanApplicationControllerForAdmin {
     }
 
     //Get single loan application by Id
-    @GetMapping("/{id}")
+    @GetMapping("/{loanId}")
     @PreAuthorize("hasAuthority('ADMIN') or @loanSecurity.isOwner(#loanId)")
     public ResponseEntity<LoanApplicationResponse> getLoanApplicationById(@PathVariable Long loanId){
         LoanApplicationResponse loanApplicationResponse = loanApplicationService.getLoanApplicationById(loanId);
         return ResponseEntity.ok(loanApplicationResponse);
     }
 
-    @PutMapping("/{id}/process")
+    @PutMapping("/{loanId}/approve")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<LoanApplicationResponse> processLoanApplication(
+    public ResponseEntity<LoanApplicationResponse> approveLoanApplication(
             @PathVariable Long loanId,
-            @Valid @RequestBody LoanApprovalRequest approvalRequest
-            ){
-        LoanApplicationResponse loanApplicationResponse = loanApplicationService.processLoanApplication(loanId, approvalRequest);
-        return ResponseEntity.ok(loanApplicationResponse);
+            @RequestBody(required = false) @Valid LoanApprovalRequest remarkRequest) { // Remarks are optional
+        LoanApplicationResponse approvedLoan = loanApplicationService.approveLoanApplication(loanId, remarkRequest);
+        return ResponseEntity.ok(approvedLoan);
+    }
+
+    @PutMapping("/{loanId}/reject")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<LoanApplicationResponse> rejectLoanApplication(
+            @PathVariable Long loanId,
+            @RequestBody(required = false) @Valid LoanApprovalRequest remarkRequest) { // Remarks are optional
+        LoanApplicationResponse rejectedLoan = loanApplicationService.rejectLoanApplication(loanId, remarkRequest);
+        return ResponseEntity.ok(rejectedLoan);
     }
 
 }

@@ -14,9 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoanApprovalRequest {
 
-    @NotNull(message = "Loan status (APPROVED/REJECTED) is required")
-    private LoanStatus status;
-
     @Size(max = 500, message = "Remarks cannot exceed 500 characters")
     private String remarks;
 }

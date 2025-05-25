@@ -48,7 +48,8 @@ public class LoanApplication {
 
     private LocalDate loanStartDate;
     private BigDecimal monthlyEmi;
-    @Column(length = 2000)
+    @Lob
+    @Column(length = 4000)
     private String repaymentSchedule;
     @Column(length = 500)
     private String adminRemarks;

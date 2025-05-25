@@ -33,10 +33,17 @@ public class LoanApplicationControllers {
     }
 
     //Get single loan application by Id
-    @GetMapping("/my")
+    @GetMapping("{loanId}")
     @PreAuthorize("hasAuthority('ADMIN') or @loanSecurity.isOwner(#loanId)")
     public ResponseEntity<LoanApplicationResponse> getLoanApplicationById(@PathVariable Long loanId){
         LoanApplicationResponse loanApplicationResponse = loanApplicationService.getLoanApplicationById(loanId);
         return ResponseEntity.ok(loanApplicationResponse);
+    }
+
+    @GetMapping("{loanId}/repayment")
+    @PreAuthorize("hasAuthority('ADMIN') or @loanSecurity.isOwner(#loanId)") // Admin can view any, user can view their own
+    public ResponseEntity<String> getLoanRepaymentSchedule(@PathVariable Long loanId) {
+        String schedule = loanApplicationService.getRepaymentSchedule(loanId);
+        return ResponseEntity.ok(schedule);
     }
 }
