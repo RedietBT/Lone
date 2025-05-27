@@ -74,4 +74,4 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 ```bash
 git clone https://github.com/RedietBT/Lone.git
-cd loan-management-system
+cd loan
