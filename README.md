@@ -73,5 +73,5 @@ Follow these instructions to get a copy of the project up and running on your lo
 ### Cloning the Repository
 
 ```bash
-git clone <your-repository-url>
+git clone <[your-repository-url](https://github.com/RedietBT/Lone.git)>
 cd loan-management-system
